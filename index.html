@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Net Grounds Booking</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Poppins, sans-serif;
+  background: #f5f5f5;
+}
+
+/* HERO */
+.hero {
+  height: 90vh;
+  background: url("https://5.imimg.com/data5/SELLER/Default/2025/7/530275996/LL/TK/WT/104304307/cricket-ground-net.jpg") center/cover no-repeat;
+  position: relative;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.10);
+  pointer-events: none;
+}
+.hero-content {
+  position: absolute;
+  z-index: 2;
+  color: #fff;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-40%);
+}
+.hero button {
+  padding: 16px 36px;
+  background: #ffcc66;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: #8b0000;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* HEADER */
+.header {
+  background: #8b0000;
+  text-align: center;
+  padding: 20px;
+}
+.header img { max-width: 300px; }
+
+/* BOOKING FORM */
+.booking {
+  max-width: 750px;
+  background: #fff;
+  margin: 60px auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.10);
+}
+.booking h2 {
+  text-align: center;
+  color: #ffcc66;
+}
+label {
+  font-weight: bold;
+  margin-top: 15px;
+  display: block;
+}
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* PITCHES */
+.pitch-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+.pitch {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  overflow: hidden;
+}
+.pitch img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+}
+.pitch.selected { border-color: #8b0000; }
+
+/* BUTTON */
+.booking button {
+  margin-top: 25px;
+  width: 100%;
+  padding: 14px;
+  background: #8b0000;
+  color: #ffcc66;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.footer {
+  text-align: center;
+  margin: 30px 0;
+  font-size: 12px;
+  color: #777;
+}
+
+/* GAP BETWEEN EVERY FORM BAR */
+.booking input,
+.booking select,
+.booking .pitch-box,
+.booking #captchaBox,
+.booking button {
+  margin-top: 18px;
+}
+</style>
+
+</style>
+</head>
+
+<body>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>Net Grounds Booking</h1>
+    <p>Cricket • Football • Shuttle • Kabaddi • Hockey • Volleyball</p>
+    <button onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">
+      BOOK GROUND
+    </button>
+  </div>
+</section>
+
+<div class="header">
+  <img src="logoA.png">
+</div>
+
+<section class="booking" id="booking">
+<h2>BOOK YOUR GROUND </h2>
+
+<input id="name" placeholder="Captain Name">
+<input id="contact" placeholder="Contact Number" maxlength="10">
+<input id="age" type="number" placeholder="Age">
+
+<label>Select Date</label>
+<input type="date" id="bookingDate">
+
+<label>Gender</label>
+<select id="gender">
+  <option value="">-- Select --</option>
+  <option>MALE</option>
+  <option>FEMALE</option>
+  <option>OTHER</option>
+</select>
+
+<label>Select Game</label>
+<select id="game" onchange="loadGrounds()">
+  <option value="">-- Select Game --</option>
+ <option value="cricket">Cricket</option>
+    <option value="shuttle">Shuttle</option>
+    <option value="football">Football</option>
+    <option value="kabaddi">Kabaddi</option>
+    <option value="hockey">Hockey</option>
+    <option value="volleyball">Volleyball</option>
+ </select>
+
+<label>Select Ground</label>
+<div class="pitch-box" id="grounds"></div>
+<input type="hidden" id="pitch">
+
+<label>Start Time</label>
+<input type="time" id="startTime">
+
+<label>End Time</label>
+<input type="time" id="endTime">
+
+<p><strong>Amount to Pay: ₹<span id="amount">0</span></strong></p>
+
+<!-- HUMAN VERIFICATION -->
+<label>Human Verification</label>
+<div id="captchaBox" style="background:#222;color:#ffcc66;padding:10px;
+text-align:center;letter-spacing:6px;font-weight:bold;border-radius:6px;"></div>
+<input id="captchaInput" placeholder="Enter above text">
+
+<!-- AUTO-FILLED PAID AMOUNT -->
+<input id="paidAmount" placeholder="Paid Amount" readonly>
+<label>Select Payment Method</label>
+<select id="paymentMethod" onchange="showQR()">
+  <option value="">-- Select Payment --</option>
+  <option value="phonepe">PhonePe</option>
+  <option value="gpay">Google Pay</option>
+    <input type="number" id="paidAmount" placeholder="Enter Paid Amount">
+
+</select>
+
+<!-- QR DISPLAY (CENTER) -->
+<div id="qrBox" style="
+  display:none;
+  text-align:center;
+  margin-top:25px;
+">
+  <img id="qrImage" style="max-width:220px;">
+  <p style="font-weight:bold;">Scan & Pay</p>
+</div>
+
+
+<button onclick="bookGround()">Pay & Book</button>
+
+<p id="msg" style="text-align:center;color:green;"></p>
+</section>
+
+<div class="footer">
+©  @net ground booking
+</div>
+
+<script>
+/* GROUNDS */
+const GAME_GROUNDS = {
+    cricket:  [
+        { name: "Pitch A", img: "https://turftown.in/_next/image?url=https%3A%2F%2Fturftown.s3.ap-south-1.amazonaws.com%2Fsuper_admin%2Ftt-1765798325080.webp&w=828&q=75" },
+        { name: "Pitch B", img: "https://playo.gumlet.io/SEANJASPORTSCLUB20230529034516533581/SeanjaSportsclub1689134152465.jpeg" },
+        { name: "Pitch C", img: "https://turftown.s3.ap-south-1.amazonaws.com/super_admin/tt-1724930134450.webp" },
+        { name: "Pitch D", img: "pitchB.png" }
+    ],
+
+    shuttle: [
+        { name: "Court 1", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCHKZJGnDoghcj-a6gsBJaBYTEgQcGQWHLzw&s" },
+        { name: "Court 2", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRlOUNePuuxZVMLERe6a70z5_a3D_iVjRCzA&s" },
+        { name: "Court 3", img: "https://media.istockphoto.com/id/1040174716/photo/line-on-green-badminton-court.jpg?s=612x612&w=0&k=20&c=kfE4sJDWUpKvFJy5v4SIZO_t-PHwE9rubf1x540U3lc=" }
+    ],
+
+    football: [
+        { name: "Ground 1", img: "https://turftown.in/_next/image?url=https%3A%2F%2Fturftown.s3.ap-south-1.amazonaws.com%2Fsuper_admin%2Ftt-1738222074442.webp&w=3840&q=75" },
+        { name: "Ground 2", img: "https://cpimg.tistatic.com/10591351/b/4/Football-Turf-Grass-14000dtex.jpeg" },
+        { name: "Ground 3", img: "https://images.pexels.com/photos/17580155/pexels-photo-17580155/free-photo-of-sunset-sunlight-over-goal-on-football-pitch.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" }
+    ],
+
+    kabaddi: [
+        { name: "Kabaddi Court 1", img: "https://5.imimg.com/data5/SELLER/Default/2021/2/QH/SC/IZ/4062243/kabaddi-mats-500x500.jpg" },
+        { name: "Kabaddi Court 2", img: "https://content.jdmagicbox.com/comp/madurai/y2/0452px452.x452.190112042817.t3y2/catalogue/kabaddi-ground-madurai-sports-ground-s9umz3u5nr.jpg" }
+    ],
+
+    hockey: [
+        { name: "Hockey Ground 1", img: "https://t4.ftcdn.net/jpg/03/80/25/37/360_F_380253752_xmXCnGoKZ0zFr8zqpOb8kabzXFpHsDBg.jpg" },
+        { name: "Hockey Ground 2", img: "https://www.as-sportssystems.co.uk/wp-content/uploads/2024/08/basingstoke-opening-march-2-1024x768.jpg" }
+    ],
+
+    volleyball: [
+        { name: "Volley Court 1", img: "https://m.media-amazon.com/images/I/81iF9U0I+ZL._AC_UF894,1000_QL80_.jpg" },
+        { name: "Volley Court 2", img: "https://images7.alphacoders.com/134/1349294.jpeg" },
+        { name: "Volley Court 3", img: "https://www.integralspor.com/uploads/news/volleyball-court-construction-1.webp" }
+    ]
+ 
+
+};
+
+function loadGrounds() {
+  grounds.innerHTML = "";
+  pitch.value = "";
+  GAME_GROUNDS[game.value]?.forEach(g => {
+    grounds.innerHTML += `
+      <div class="pitch" onclick="selectPitch(this,'${g.name}')">
+        <img src="${g.img}">
+        <p>${g.name}</p>
+      </div>`;
+  });
+}
+
+function selectPitch(el, name) {
+  document.querySelectorAll(".pitch").forEach(p => p.classList.remove("selected"));
+  el.classList.add("selected");
+  pitch.value = name;
+}
+
+/* CAPTCHA */
+let captchaValue = "";
+function generateCaptcha() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  captchaValue = "";
+  for (let i = 0; i < 5; i++) {
+    captchaValue += chars[Math.floor(Math.random() * chars.length)];
+  }
+  captchaBox.innerText = captchaValue;
+}
+generateCaptcha();
+
+/* AMOUNT CALCULATION */
+const RATE_PER_MINUTE = 10;
+
+function calculateAmount() {
+  if (!startTime.value || !endTime.value) {
+    amount.innerText = "0";
+    paidAmount.value = "";
+    return;
+  }
+
+  const s = new Date(`1970-01-01T${startTime.value}`);
+  const e = new Date(`1970-01-01T${endTime.value}`);
+  const minutes = (e - s) / 60000;
+
+  amount.innerText = minutes > 0 ? minutes * RATE_PER_MINUTE : "0";
+  paidAmount.value = amount.innerText;
+}
+
+startTime.addEventListener("change", calculateAmount);
+endTime.addEventListener("change", calculateAmount);
+
+/* FINAL BOOKING */
+function bookGround() {
+
+  if (!name.value || !contact.value || !age.value ||
+      !bookingDate.value || !gender.value ||
+      !game.value || !pitch.value) {
+    alert("Please fill all details");
+    return;
+  }
+
+  if (captchaInput.value !== captchaValue) {
+    alert("Human verification failed");
+    generateCaptcha();
+    captchaInput.value = "";
+    return;
+  }
+
+  if (paidAmount.value !== amount.innerText || amount.innerText === "0") {
+    alert("Invalid payment amount");
+    return;
+  }
+
+  msg.innerText = "✅ Booking Confirmed Successfully!";
+}
+function showQR() {
+  const method = paymentMethod.value;
+  qrBox.style.display = "none";
+
+  if (method === "phonepe") {
+    qrImage.src = "phonepeA.png";
+    qrBox.style.display = "block";
+  }
+
+  if (method === "gpay") {
+    qrImage.src = "googleA.png";
+    qrBox.style.display = "block";
+  }
+}
+
+
+
+</script>
+
+</body>
+</html>
